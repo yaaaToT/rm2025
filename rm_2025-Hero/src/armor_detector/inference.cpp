@@ -446,6 +446,20 @@ bool ArmorDetector::detect(cv::Mat &src, std::vector<ArmorObject> &objects, bool
 
 }
 
+cv::Point2f ArmorDetector::TargetCenter(const cv::Point2f *points)
+{
+    cv::Point2f center(0,0);
+    for(int i=0;i<4;i++)
+    {
+        center.x+=points[i].x;
+        center.y+=points[i].y;
+    }
+    center.x/=4;
+    center.y/=4;
+
+    return center;
+}
+
 static std::string colorText[] = {"Blue", "Red", "Gray", "Purple"};
 static std::string typeText[] = {"Sentry", "1", "2", "3", "4", "5", "OutPost", "Base"};
 
@@ -464,4 +478,35 @@ void ArmorDetector::drawArmors(cv::Mat &src, std::vector<ArmorObject> &objects)
         cv::putText(src, colorText[(object.color / 2)] + " "+ typeText[object.cls] + " : "+ std::to_string(object.prob*100)+"%", object.apex[0], cv::FONT_HERSHEY_SIMPLEX, 1.5, cv::Scalar(0, 255, 0));
     }
     circle(src, cv::Point2f(100, 100), 10, cv::Scalar(0, 255, 0), 1, 3);
+}
+
+cv::Point2f ArmorDetector::FourPoints(cv::Point2f points[])
+{
+
+    //ArmorObject object;
+
+
+    cv::Point2f obj_points[4];
+
+    int i=0;
+
+    for(int i=0;i<4;i++){
+
+        obj_points[0]=points[0];i=0;//std::cout<<"point:"<<object.apex[0].x<<","<<object.apex[0].y<<std::endl;
+        obj_points[1]=points[1];i=1;
+        obj_points[2]=points[3];i=2;
+        obj_points[3]=points[2];i=3;
+
+
+    }
+    if(i==0)
+    {    std::cout<<"point:"<<obj_points[0].x<<","<<obj_points[0].y<<std::endl;
+    return obj_points[0];}
+
+    else if(i==1)
+        return obj_points[1];
+    else if(i==2)
+        return obj_points[2];
+    else
+        return obj_points[3];
 }

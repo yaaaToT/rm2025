@@ -30,10 +30,10 @@
 #define ROI_OUTPOST_WITH_ROLL_YMIN 608
 
 // ArmorObject
-    struct ArmorObject:Armor
+    struct ArmorObject
     {
-        ArmorObject() {};
-        ArmorObject(const Armor& target_armors) {}
+        //ArmorObject() {};
+        //ArmorObject(const Armor& target_armors) {}
         cv::Rect_<float> rect;
         int cls;
         int color;
@@ -41,8 +41,18 @@
         std::vector<cv::Point2f> pts;
         int area;
         cv::Point2f apex[4];
+        ArmorObject()
+        {
 
+        }
+        std::vector<cv::Point2f>object_points;
 
+        cv::Point2f center;
+
+        // resolver
+        Eigen::Affine3d pose;
+        double distance;
+        double distance_to_target_center;
 
     };
 
@@ -61,11 +71,16 @@
         ArmorDetector();
 //        ~ArmorDetector();
         bool detect(cv::Mat &src, std::vector<ArmorObject>& objects, bool use_roi=false);
-//        bool detect(cv::Mat &src,  std::vector<Armor>& target_armors, bool use_roi=false);
+
         bool initModel(std::string path);
         // vis: draw for debug
         void drawArmors(cv::Mat &drawing, std::vector<ArmorObject>& objects);
-//        void drawArmors(cv::Mat &src, std::vector<Armor>& target_armors);
+
+        cv::Point2f TargetCenter(const cv::Point2f points[]);
+
+        cv::Point2f FourPoints(cv::Point2f points[]);
+
+        cv::Point2f center;
 
         std::vector<ArmorObject> objects;
 

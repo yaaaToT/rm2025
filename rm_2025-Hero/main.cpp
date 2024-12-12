@@ -190,12 +190,12 @@ void* ImageProcess(void*)
 
 
 
-                std::cout << "send pitch" << RobotInfo.Pitch.f << std::endl;
-                std::cout << "send yaw" << RobotInfo.Yaw.f << std::endl;
+//                std::cout << "send pitch" << RobotInfo.Pitch.f << std::endl;
+//                std::cout << "send yaw" << RobotInfo.Yaw.f << std::endl;
 
-                putText(src, "Yaw :" + std::to_string(RobotInfo.Yaw.f), cv::Point(4, 45), cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(255, 255, 255), 1);
-                putText(src, "Pitch :" + std::to_string(RobotInfo.Pitch.f), cv::Point(4, 65), cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(255, 255, 255), 1);
-                putText(src, "distance :" + std::to_string(RobotInfo.distance.f), cv::Point(4, 85), cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(255, 255, 255), 1);
+//                putText(src, "Yaw :" + std::to_string(RobotInfo.Yaw.f), cv::Point(4, 45), cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(255, 255, 255), 1);
+//                putText(src, "Pitch :" + std::to_string(RobotInfo.Pitch.f), cv::Point(4, 65), cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(255, 255, 255), 1);
+//                putText(src, "distance :" + std::to_string(RobotInfo.distance.f), cv::Point(4, 85), cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(255, 255, 255), 1);
 
 //                std::cout << "send pitch" << Pitch << std::endl;
 //                std::cout << "send yaw" << Yaw << std::endl;
@@ -246,31 +246,48 @@ void* ImageProcess(void*)
             // 前哨站模式
             else if (MainControlInfo.mode == OUTPOST_MODE)
             {
-                Preprocess_image = Preprocess(src, BLUE);  // 强制蓝色模式
+//                Preprocess_image = Preprocess(src, BLUE);  // 强制蓝色模式
 
-                bridge_link.FindLight(Preprocess_image);
-               bridge_link.FindArmor(Preprocess_image);
-                bridge_link.Digital_recognition(src,bridge_link.armors_,bridge_link.target_armors);
+//                bridge_link.FindLight(Preprocess_image);
+//               bridge_link.FindArmor(Preprocess_image);
+//                bridge_link.Digital_recognition(src,bridge_link.armors_,bridge_link.target_armors);
 
 
                 std::string network_path = "/home/yaaa/rm-Hero/params/best_06_02.xml";
                 bridge_in.initModel(network_path);
 
-                for(const auto& armor : bridge_link.target_armors) {
-                    bridge_in.objects.push_back(ArmorObject(armor));
-                }
+//                for(const auto& armor : bridge_link.target_armors) {
+//                    bridge_in.objects.push_back(ArmorObject(armor));
+//                }
 
                 bridge_in.detect(src,bridge_in.objects);
 
                 bridge_in.drawArmors(src,bridge_in.objects);
 
+                for(auto&object:bridge_in.objects)
+                {
+                    resolver_obj.Dl_DistanceMeasurer(object);
+                }
+
+                resolver_obj.Dl_AimTarget(bridge_in.objects);
+
+                RobotInfo.Yaw.f=resolver_obj.send_yaw*1.0f;
+                RobotInfo.Pitch.f=resolver_obj.send_pitch*1.0f;
+                RobotInfo.distance.f=resolver_obj.send_distance;
+
+                putText(src, "Yaw :" + std::to_string(RobotInfo.Yaw.f), cv::Point(4, 145), cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(255, 255, 255), 1);
+                putText(src, "Pitch :" + std::to_string(RobotInfo.Pitch.f), cv::Point(4, 165), cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(255, 255, 255), 1);
+                putText(src, "distance :" + std::to_string(RobotInfo.distance.f), cv::Point(4, 185), cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(255, 255, 255), 1);
+                cv::circle(src,bridge_in.center,5,cv::Scalar(0,0,255),-1);
+
+
                imshow("src", src);
 
                //测量目标装甲板的距离和角度
-               for(auto& target_armor:bridge_link.target_armors)
-               {
-                   resolver_obj.DistanceMeasurer(target_armor);
-               }
+//               for(auto& target_armor:bridge_link.target_armors)
+//               {
+//                   resolver_obj.DistanceMeasurer(target_armor);
+//               }
 
                //解算弹道
 //               resolver_obj.AimTraget(bridge_link.target_armors);

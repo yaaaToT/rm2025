@@ -2,6 +2,7 @@
 #ifndef DESIGN_RESOLVER_H
 #define DESIGN_RESOLVER_H
 #include "../armor_detector/armor.h"
+#include "../armor_detector/inference.h"
 #include "eigen3/Eigen/Eigen"
 #include "GimbalControl.h"
 
@@ -9,11 +10,19 @@ class Resolver : public GimbalControl{
 public:
     Resolver();
     void DistanceMeasurer(Armor &armor);
+    void Dl_DistanceMeasurer(ArmorObject &object);
+
     void SetWorldPoints(ArmorType armor_type);
+    void Dl_SetWorldPoints();
+
     void SolvePNP(Armor& armor);
+    void Dl_SolvePNP(ArmorObject &object);
+
     void DistanceToCenter(Armor& armor);
+    void Dl_DisToCenter(ArmorObject &object);
 
     void AimTraget(std::vector<Armor>& armors);
+    void Dl_AimTarget(std::vector<ArmorObject>&objects);
 
     cv::Mat CameraMatrix_;      // 相机内参矩阵
     cv::Mat DistCoeffs_;        // 相机畸变矩阵
